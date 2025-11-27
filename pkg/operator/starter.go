@@ -324,6 +324,10 @@ func (v *versionGetter) SetVersion(operandName, version string) {
 	// this versionGetter impl always gets the current version dynamically from operator config object status.
 }
 
+func (v *versionGetter) UnsetVersion(operandName string) {
+	// this versionGetter impl always gets the current version dynamically from operator config object status.
+}
+
 func (v *versionGetter) GetVersions() map[string]string {
 	co, err := v.openshiftControllerManagers.Get(context.TODO(), "cluster", metav1.GetOptions{})
 	if co == nil || err != nil {
