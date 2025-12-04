@@ -14,11 +14,11 @@ can be viewed in a cluster with:
 $ oc get crd openshiftcontrollermanagers.operator.openshift.io -o yaml
 ```
 
-Many OpenShift ClusterOperators share common build, test, deployment, and update methods.    
-For more information about how to build, deploy, test, update, and develop OpenShift ClusterOperators, see      
+Many OpenShift ClusterOperators share common build, test, deployment, and update methods.
+For more information about how to build, deploy, test, update, and develop OpenShift ClusterOperators, see
 [OpenShift ClusterOperator and Operand Developer Document](https://github.com/openshift/enhancements/blob/master/dev-guide/operators.md#how-do-i-buildupdateverifyrun-unit-tests)
 
-This section explains how to deploy OpenShift with your test openshift-controller-manager image:        
+This section explains how to deploy OpenShift with your test openshift-controller-manager image:
 [Testing a ClusterOperator/Operand image in a cluster](https://github.com/openshift/enhancements/blob/master/dev-guide/operators.md#how-can-i-test-changes-to-an-openshift-operatoroperandrelease-component)
 
 ## Rebase
@@ -31,3 +31,28 @@ Follow this checklist and copy into the PR:
 - [ ] Run `make build verify test`.
 - [ ] Make code changes as needed until the above pass.
 - [ ] Any other minor update, like documentation.
+
+## OpenShift Tests Extension (OTE)
+
+This repository is compatible with the "OpenShift Tests Extension (OTE)" framework.
+
+### Building the test extension binary
+
+```bash
+make tests-ext-build
+```
+
+### Running test suites
+
+```bash
+./cluster-openshift-controller-manager-operator-tests-ext run --suite <suite-name>
+```
+
+### Listing available tests and suites
+
+```bash
+./cluster-openshift-controller-manager-operator-tests-ext list tests
+./cluster-openshift-controller-manager-operator-tests-ext list suites
+```
+
+The test extension binary is included in the production image for integration with CI/CD pipelines.
