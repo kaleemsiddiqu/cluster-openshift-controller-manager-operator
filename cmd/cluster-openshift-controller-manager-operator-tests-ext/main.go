@@ -3,13 +3,17 @@ package main
 import (
 	"context"
 	"os"
+	"time"
 
 	"github.com/spf13/cobra"
 	"k8s.io/component-base/cli"
 
 	otecmd "github.com/openshift-eng/openshift-tests-extension/pkg/cmd"
 	oteextension "github.com/openshift-eng/openshift-tests-extension/pkg/extension"
+	oteginkgo "github.com/openshift-eng/openshift-tests-extension/pkg/ginkgo"
 	"github.com/openshift/cluster-openshift-controller-manager-operator/pkg/version"
+
+	_ "github.com/openshift/cluster-openshift-controller-manager-operator/test/e2e"
 
 	"k8s.io/klog/v2"
 )
@@ -47,6 +51,27 @@ func newOperatorTestCommand(ctx context.Context) *cobra.Command {
 func prepareOperatorTestsRegistry() *oteextension.Registry {
 	registry := oteextension.NewRegistry()
 	extension := oteextension.NewExtension("openshift", "payload", "cluster-openshift-controller-manager-operator")
+
+	// Build test specs from Ginkgo tests
+	testSpecs, err := oteginkgo.BuildExtensionTestSpecsFromOpenShiftGinkgoSuite()
+	if err != nil {
+		klog.Fatalf("failed to build test specs: %v", err)
+	}
+
+	testTimeout := 30 * time.Minute
+
+	// Register serial test suite for tests that must run serially
+	serialSuite := oteextension.Suite{
+		Name: "openshift/cluster-openshift-controller-manager-operator/operator/serial",
+		Qualifiers: []string{
+			`test.Name.Contains("[Serial]") && (test.Name.Contains("[Operator]") || test.Name.Contains("[TLS]") || test.Name.Contains("[Build]") || test.Name.Contains("[Image]"))`,
+		},
+		Parallelism: 1,
+		TestTimeout: &testTimeout,
+	}
+
+	extension.AddSuite(serialSuite)
+	extension.AddSpecs(testSpecs)
 
 	registry.Register(extension)
 	return registry
