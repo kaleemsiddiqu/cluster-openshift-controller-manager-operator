@@ -10,6 +10,7 @@ import (
 	operatorv1informers "github.com/openshift/client-go/operator/informers/externalversions"
 	"github.com/openshift/library-go/pkg/controller/factory"
 	"github.com/openshift/library-go/pkg/operator/configobserver"
+	"github.com/openshift/library-go/pkg/operator/configobserver/apiserver"
 	"github.com/openshift/library-go/pkg/operator/configobserver/featuregates"
 	"github.com/openshift/library-go/pkg/operator/events"
 	"github.com/openshift/library-go/pkg/operator/v1helpers"
@@ -35,6 +36,7 @@ func NewConfigObserver(
 	informersSynced := []cache.InformerSynced{
 		configInformers.Config().V1().Images().Informer().HasSynced,
 		configInformers.Config().V1().Networks().Informer().HasSynced,
+		configInformers.Config().V1().APIServers().Informer().HasSynced,
 		configInformers.Config().V1().ClusterVersions().Informer().HasSynced,
 		configInformers.Config().V1().ClusterOperators().Informer().HasSynced,
 		kubeInformersForOperatorNamespace.Core().V1().ConfigMaps().Informer().HasSynced,
@@ -49,6 +51,7 @@ func NewConfigObserver(
 		ImageConfigLister:     configInformers.Config().V1().Images().Lister(),
 		NetworkLister:         configInformers.Config().V1().Networks().Lister(),
 		FeatureGateLister_:    configInformers.Config().V1().FeatureGates().Lister(),
+		APIServerLister_:      configInformers.Config().V1().APIServers().Lister(),
 		ClusterVersionLister:  configInformers.Config().V1().ClusterVersions().Lister(),
 		ClusterOperatorLister: configInformers.Config().V1().ClusterOperators().Lister(),
 		ConfigMapLister:       kubeInformersForOperatorNamespace.Core().V1().ConfigMaps().Lister(),
@@ -67,6 +70,7 @@ func NewConfigObserver(
 			[]string{"featureGates"},
 			featureGateAccessor,
 		),
+		apiserver.ObserveTLSSecurityProfile,
 	}
 
 	if buildEnabled {

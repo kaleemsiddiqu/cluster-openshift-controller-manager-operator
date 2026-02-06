@@ -14,6 +14,7 @@ type Listers struct {
 	ConfigMapLister       corelistersv1.ConfigMapLister
 	NetworkLister         configlistersv1.NetworkLister
 	FeatureGateLister_    configlistersv1.FeatureGateLister
+	APIServerLister_      configlistersv1.APIServerLister
 	ClusterVersionLister  configlistersv1.ClusterVersionLister
 	ClusterOperatorLister configlistersv1.ClusterOperatorLister
 	PreRunCachesSynced    []cache.InformerSynced
@@ -29,4 +30,8 @@ func (l Listers) PreRunHasSynced() []cache.InformerSynced {
 
 func (l Listers) FeatureGateLister() configlistersv1.FeatureGateLister {
 	return l.FeatureGateLister_
+}
+
+func (l Listers) APIServerLister() configlistersv1.APIServerLister {
+	return l.APIServerLister_
 }
